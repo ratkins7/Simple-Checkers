@@ -1,5 +1,5 @@
 # Simple-Checkers
-Simple Checkers Game Engine
+Simple-Checkers Game Engine
 
 Game rules can be found here -> https://en.wikipedia.org/wiki/English_draughts
 
