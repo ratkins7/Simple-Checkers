@@ -50,7 +50,6 @@ void initialize_board(string (&b)[ROWS][COLS]){
 	b[7][2] = "--0";
 	b[7][4] = "--0";
 	b[7][6] = "--0";
-
 }
 
 
