@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : Simple Checkers
+// Name        : Checkers
 // Author      : Ryan Atkins
 // Version     : v1.0
 // Copyright   : Your copyright notice
@@ -8,6 +8,7 @@
 
 
 #include <iostream>
+#include <vector>
 #include "main.hpp"
 using namespace std;
 
@@ -15,52 +16,55 @@ using namespace std;
 void initialize_board(string (&b)[ROWS][COLS]){
 	for(int i = 0; i < ROWS; i++){
 		for(int j = 0; j < COLS; j++){
-			b[i][j] = "--.";
+			b[i][j] = EMPTY_PIECE;
 		}
 	}
 
-	// Setup Computer Pieces 	-> X
-	b[0][1] = "--X";
-	b[0][3] = "--X";
-	b[0][5] = "--X";
-	b[0][7] = "--X";
+	// Setup COMPUTER_PIECE 	-> -X-
+	b[0][1] = COMPUTER_PIECE;
+	b[0][3] = COMPUTER_PIECE;
+	b[0][5] = COMPUTER_PIECE;
+	b[0][7] = COMPUTER_PIECE;
 
-	b[1][0] = "--X";
-	b[1][2] = "--X";
-	b[1][4] = "--X";
-	b[1][6] = "--X";
+	b[1][0] = COMPUTER_PIECE;
+	b[1][2] = COMPUTER_PIECE;
+	b[1][4] = COMPUTER_PIECE;
+	b[1][6] = COMPUTER_PIECE;
 
-	b[2][1] = "--X";
-	b[2][3] = "--X";
-	b[2][5] = "--X";
-	b[2][7] = "--X";
+	b[2][1] = COMPUTER_PIECE;
+	b[2][3] = COMPUTER_PIECE;
+	b[2][5] = COMPUTER_PIECE;
+	b[2][7] = COMPUTER_PIECE;
 
-	// Setup Player Pieces 	-> 0
-	b[5][0] = "--0";
-	b[5][2] = "--0";
-	b[5][4] = "--0";
-	b[5][6] = "--0";
+	// Setup PLAYER_PIECE 	-> -0-
+	b[5][0] = PLAYER_PIECE;
+	b[5][2] = PLAYER_PIECE;
+	b[5][4] = PLAYER_PIECE;
+	b[5][6] = PLAYER_PIECE;
 
-	b[6][1] = "--0";
-	b[6][3] = "--0";
-	b[6][5] = "--0";
-	b[6][7] = "--0";
+	b[6][1] = PLAYER_PIECE;
+	b[6][3] = PLAYER_PIECE;
+	b[6][5] = PLAYER_PIECE;
+	b[6][7] = PLAYER_PIECE;
 
-	b[7][0] = "--0";
-	b[7][2] = "--0";
-	b[7][4] = "--0";
-	b[7][6] = "--0";
+	b[7][0] = PLAYER_PIECE;
+	b[7][2] = PLAYER_PIECE;
+	b[7][4] = PLAYER_PIECE;
+	b[7][6] = PLAYER_PIECE;
+
 }
 
 
 void print_board(string (&b)[ROWS][COLS]){
 	cout << endl;
+	cout << "   0  1  2  3  4  5  6  7 \n";
 
 	for(int i = 0; i < ROWS; i++){
+		cout << i << " ";
 		for(int j = 0; j < COLS; j++){
 			cout << b[i][j];
 		}
-		cout << "--\n";
+		cout << "\n";
 	}
 
 	cout << endl;
@@ -83,13 +87,6 @@ bool validate_within_limits(int a,int b,int c,int d){
 
 
 void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, string (&b)[ROWS][COLS]){
-
-//	int from_pair = {{0,1},{0,3},{0,5},{0,7},{1,0},{1,2},{1,4},{1,6},
-//					 {2,1},{2,3},{2,5},{2,7}};
-//
-//	int to_pair = {{3,0},{3,2},{3,4},{3,6},{4,1},{4,3},{4,5},{4,7},
-//				   {5,0},{5,2},{5,4},{5,6},{6,1},{6,3},{6,5},{6,7},
-//				   {7,0},{7,2},{7,4},{7,6}};
 
 	// Plan would be for computer to pick randomly from spaces on the board where
 	//  it has a piece and look through the list of spaces possible to move to from the
@@ -115,7 +112,7 @@ bool check_from_occupied(int fr_r, int fr_c, string p, string (&b)[ROWS][COLS]){
 
 
 bool check_to_occupied(int to_r, int to_c, string (&b)[ROWS][COLS]){
-	return b[to_r][to_c] == "--.";
+	return b[to_r][to_c] == "-.-";
 }
 
 
@@ -143,7 +140,7 @@ bool check_diagonal(int fr_r, int fr_c, int to_r, int to_c){
 
 bool check_forward(int fr_r, int fr_c, int to_r, int to_c, string p){
 	// Computer Orientation
-	if(p == "--X"){
+	if(p == COMPUTER_PIECE){
 		if(fr_r > to_r)
 			return false;
 
@@ -160,7 +157,7 @@ bool check_forward(int fr_r, int fr_c, int to_r, int to_c, string p){
 
 bool check_jump(int fr_r, int fr_c, int to_r, int to_c, string &p){
 	// Computer Orientation
-	if(p == "--X"){
+	if(p == COMPUTER_PIECE){
 		if(to_r - fr_r == 2){
 			return true;
 		}
@@ -178,14 +175,14 @@ bool check_jump(int fr_r, int fr_c, int to_r, int to_c, string &p){
 
 bool check_valid_jump(int fr_r, int fr_c, int to_r, int to_c, string &p, string (&b)[ROWS][COLS]){
 	// Computer Orientation
-	if(p == "--X"){
+	if(p == COMPUTER_PIECE){
 		// Right
 		if(fr_c < to_c){
-			if(b[fr_r+1][fr_c+1] != "--0")
+			if(b[fr_r+1][fr_c+1] != PLAYER_PIECE)
 				return false;
 		} else{
 			// Left
-			if(b[fr_r+1][fr_c-1] != "--0")
+			if(b[fr_r+1][fr_c-1] != PLAYER_PIECE)
 				return false;
 		}
 
@@ -194,11 +191,11 @@ bool check_valid_jump(int fr_r, int fr_c, int to_r, int to_c, string &p, string 
 
 		// Right
 		if(fr_c < to_c){
-			if(b[fr_r-1][fr_c+1] != "--0")
+			if(b[fr_r-1][fr_c+1] != PLAYER_PIECE)
 				return false;
 		} else{
 			// Left
-			if(b[fr_r-1][fr_c-1] != "--0")
+			if(b[fr_r-1][fr_c-1] != PLAYER_PIECE)
 				return false;
 		}
 	}
@@ -210,7 +207,7 @@ bool check_valid_jump(int fr_r, int fr_c, int to_r, int to_c, string &p, string 
 
 void play_move(int fr_r, int fr_c, int to_r, int to_c, string &p, string (&b)[ROWS][COLS]){
 	// From [fr_r,fr_c] to [to_r,to_c]
-	b[fr_r][fr_c] = "--.";
+	b[fr_r][fr_c] = EMPTY_PIECE;
 	b[to_r][to_c] = p;
 }
 
@@ -218,10 +215,10 @@ void play_move(int fr_r, int fr_c, int to_r, int to_c, string &p, string (&b)[RO
 void change_player(string &p, string &current_turn){
 	if(current_turn == "Player"){
 		current_turn = "Computer";
-		p = "--X";
+		p = COMPUTER_PIECE;
 	} else {
 		current_turn = "Player";
-		p = "--0";
+		p = PLAYER_PIECE;
 	}
 }
 
@@ -238,17 +235,70 @@ bool check_winner(int &pp, int &cp, bool &c){
 }
 
 
+class range_exception: public exception{
+  virtual const char* what() const throw(){
+    return "Error -> Move is not on the board";
+  }
+} range_except;
+
+
+class from_exception: public exception{
+  virtual const char* what() const throw(){
+    return "Error -> FROM space not occupied by your piece";
+  }
+} from_except;
+
+
+class to_exception: public exception{
+  virtual const char* what() const throw(){
+    return "Error -> TO space cannot be occupied";
+  }
+} to_except;
+
+
+class diagonal_exception: public exception{
+  virtual const char* what() const throw(){
+    return "Error -> Move must be a diagonal one";
+  }
+} diagonal_except;
+
+
+class backwards_exception: public exception{
+  virtual const char* what() const throw(){
+    return "Error -> Moving backwards is not allowed";
+  }
+} backwards_except;
+
+
+class invalid_jump_exception: public exception{
+  virtual const char* what() const throw(){
+    return "Error -> Not a valid jump";
+  }
+} invalid_jump_except;
+
+
 
 int main(){
 
 	int player_pieces = 12;
 	int computer_pieces = 12;
-	bool winner   = false; // True when either the Player or Computer has won the game
-	bool champion = false; // True when Player defeats the Computer
+	bool winner   = false; 		// True when either the Player or Computer has won the game
+	bool champion = false; 		// True when Player defeats the Computer
 	string current_turn = "Player";
-	string piece = "--0";
+	string piece = PLAYER_PIECE;
 
-	// Dummy var since computer logic not fully implemented.
+	// Computer uses to see the board.
+	vector<pair<int,int> > from_pairs = {{0,1},{0,3},{0,5},{0,7},
+										 {1,0},{1,2},{1,4},{1,6},
+										 {2,1},{2,3},{2,5},{2,7}  };
+
+	vector<pair<int,int> > to_pairs = {{3,0},{3,2},{3,4},{3,6},
+									   {4,1},{4,3},{4,5},{4,7},
+									   {5,0},{5,2},{5,4},{5,6},
+									   {6,1},{6,3},{6,5},{6,7},
+									   {7,0},{7,2},{7,4},{7,6}  };
+
+	// Dummy variable since computer logic not fully implemented.
 	int count = 0;
 
 	cout << "Welcome to Simple Checkers" << endl;
@@ -326,51 +376,82 @@ int main(){
 				}
 			}
 
-
-
 			// Check for valid move
-			if(check_in_range(a,b,c,d)){
+			try {
+				if(!check_in_range(a,b,c,d))
+					throw range_except;
 
-				if(check_from_occupied(a,b,piece,game_board)){
+				if(!check_from_occupied(a,b,piece,game_board))
+					throw from_except;
 
-					if(check_to_occupied(c,d,game_board)){
+				if(!check_to_occupied(c,d,game_board))
+					throw to_except;
 
-						if(check_diagonal(a,b,c,d)){
+				if(!check_diagonal(a,b,c,d))
+					throw diagonal_except;
 
-							if(check_forward(a,b,c,d,piece)){
+				if(!check_forward(a,b,c,d,piece))
+					throw backwards_except;
 
-								if(!check_jump(a,b,c,d,piece)){
-									valid_move = true;
-
-								} else {
-									if(check_valid_jump(a,b,c,d,piece,game_board)){
-										valid_move = true;
-									} else {
-										cout << "Error -> Not a valid jump" << endl;
-									}
-								}
-
-								// valid_move = true;
-
-							} else {
-								cout << "Error -> Moving backwards is not allowed" << endl;
-							}
-
-						} else {
-							cout << "Error -> Move must be a diagonal one" << endl;
-						}
-
-					} else {
-						cout << "Error -> TO space cannot be occupied" << endl;
-					}
+				if(!check_jump(a,b,c,d,piece)){
+					valid_move = true;
 
 				} else {
-					cout << "Error -> FROM space not occupied by your piece" << endl;
+					if(check_valid_jump(a,b,c,d,piece,game_board)){
+						valid_move = true;
+					} else {
+						throw invalid_jump_except;
+					}
 				}
-
-			} else {
-				cout << "Error -> Moves not on the board" << endl;
 			}
+
+			catch (exception& e){
+				cout << e.what() << '\n';
+			}
+
+//			// Check for valid move
+//			if(check_in_range(a,b,c,d)){
+//
+//				if(check_from_occupied(a,b,piece,game_board)){
+//
+//					if(check_to_occupied(c,d,game_board)){
+//
+//						if(check_diagonal(a,b,c,d)){
+//
+//							if(check_forward(a,b,c,d,piece)){
+//
+//								if(!check_jump(a,b,c,d,piece)){
+//									valid_move = true;
+//
+//								} else {
+//									if(check_valid_jump(a,b,c,d,piece,game_board)){
+//										valid_move = true;
+//									} else {
+//										cout << "Error -> Not a valid jump" << endl;
+//									}
+//								}
+//
+//								// valid_move = true;
+//
+//							} else {
+//								cout << "Error -> Moving backwards is not allowed" << endl;
+//							}
+//
+//						} else {
+//							cout << "Error -> Move must be a diagonal one" << endl;
+//						}
+//
+//					} else {
+//						cout << "Error -> TO space cannot be occupied" << endl;
+//					}
+//
+//				} else {
+//					cout << "Error -> FROM space not occupied by your piece" << endl;
+//				}
+//
+//			} else {
+//				cout << "Error -> Moves not on the board" << endl;
+//			}
 
 		}
 
@@ -400,5 +481,4 @@ int main(){
 
 	return 0;
 }
-
 
