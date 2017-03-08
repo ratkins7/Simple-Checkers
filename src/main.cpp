@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
 #include "main.hpp"
 using namespace std;
 
@@ -81,12 +82,12 @@ void print_error(){
 }
 
 
-bool validate_within_limits(int a,int b,int c,int d){
-	return a >= 0 && a < ROWS && b >=0 && b <= COLS && c >=0 && c < ROWS && d >=0 && d < COLS;
+bool validate_within_limits(int a,int b){
+	return a >= 0 && a < ROWS && b >=0 && b <= COLS;
 }
 
 
-void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, string (&b)[ROWS][COLS]){
+void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, vector<pair<int,int>> &from_p, vector<pair<int,int>> &to_p, int c){
 
 	// Plan would be for computer to pick randomly from spaces on the board where
 	//  it has a piece and look through the list of spaces possible to move to from the
@@ -94,6 +95,13 @@ void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, string (&b)[R
 	// Did not have enough time to keep track of where the computer currently has pieces
 	//  after the initial board setup in order to run the game for awhile.
 	// Currently, computer will just make two valid moves.
+
+	fr_r = from_p.back().first;
+	fr_c = from_p.back().second;
+
+	to_r = to_p.at(c).first;
+	to_c = to_p.at(c).second;
+
 
 }
 
@@ -118,23 +126,68 @@ bool check_to_occupied(int to_r, int to_c, string (&b)[ROWS][COLS]){
 
 bool check_diagonal(int fr_r, int fr_c, int to_r, int to_c){
 
-	// right
-	if(fr_r == to_r && fr_c + 1 == to_c)
-		return false;
+	// One Space Diagonal
+	if(validate_within_limits(fr_r-1,fr_c-1)){
+		if(fr_r - 1 == to_r && fr_c - 1 == to_c)
+			return true;
+	}
 
-	// left
-	if(fr_r == to_r && fr_c - 1 == to_c)
-		return false;
+	if(validate_within_limits(fr_r-1,fr_c+1)){
+		if(fr_r - 1 == to_r && fr_c + 1 == to_c)
+			return true;
+	}
 
-	// up
-	if(fr_r - 1 == to_r && fr_c == to_c)
-		return false;
+	if(validate_within_limits(fr_r+1,fr_c-1)){
+		if(fr_r + 1 == to_r && fr_c - 1 == to_c)
+			return true;
+	}
 
-	// down
-	if(fr_r + 1 == to_r && fr_c == to_c)
-		return false;
+	if(validate_within_limits(fr_r+1,fr_c+1)){
+		if(fr_r + 1 == to_r && fr_c + 1 == to_c)
+			return true;
+	}
 
-	return true;
+	// Two Space Diagonal -> Possible Jump
+	if(validate_within_limits(fr_r-2,fr_c-2)){
+		if(fr_r - 2 == to_r && fr_c - 2 == to_c)
+			return true;
+	}
+
+	if(validate_within_limits(fr_r-2,fr_c+2)){
+		if(fr_r - 2 == to_r && fr_c + 2 == to_c)
+			return true;
+	}
+
+	if(validate_within_limits(fr_r+2,fr_c-2)){
+		if(fr_r + 2 == to_r && fr_c - 2 == to_c)
+			return true;
+	}
+
+	if(validate_within_limits(fr_r+1,fr_c+1)){
+		if(fr_r + 2 == to_r && fr_c + 2 == to_c)
+			return true;
+	}
+
+	return false;
+
+//	 Moreso check adjacent squares
+//	// right
+//	if(fr_r == to_r && fr_c + 1 == to_c)
+//		return false;
+//
+//	// left
+//	if(fr_r == to_r && fr_c - 1 == to_c)
+//		return false;
+//
+//	// up
+//	if(fr_r - 1 == to_r && fr_c == to_c)
+//		return false;
+//
+//	// down
+//	if(fr_r + 1 == to_r && fr_c == to_c)
+//		return false;
+//
+//	return true;
 }
 
 
@@ -151,7 +204,6 @@ bool check_forward(int fr_r, int fr_c, int to_r, int to_c, string p){
 	}
 
 	return true;
-
 }
 
 
@@ -191,11 +243,11 @@ bool check_valid_jump(int fr_r, int fr_c, int to_r, int to_c, string &p, string 
 
 		// Right
 		if(fr_c < to_c){
-			if(b[fr_r-1][fr_c+1] != PLAYER_PIECE)
+			if(b[fr_r-1][fr_c+1] != COMPUTER_PIECE)
 				return false;
 		} else{
 			// Left
-			if(b[fr_r-1][fr_c-1] != PLAYER_PIECE)
+			if(b[fr_r-1][fr_c-1] != COMPUTER_PIECE)
 				return false;
 		}
 	}
@@ -205,10 +257,33 @@ bool check_valid_jump(int fr_r, int fr_c, int to_r, int to_c, string &p, string 
 }
 
 
-void play_move(int fr_r, int fr_c, int to_r, int to_c, string &p, string (&b)[ROWS][COLS]){
+void play_move(int fr_r, int fr_c, int to_r, int to_c, string &p, int &pp, int &cp, string (&b)[ROWS][COLS]){
 	// From [fr_r,fr_c] to [to_r,to_c]
 	b[fr_r][fr_c] = EMPTY_PIECE;
 	b[to_r][to_c] = p;
+
+	// If this is a jump, remove jumped piece
+	if(abs(fr_r-to_r) == 2){
+		if(p == COMPUTER_PIECE){
+			// Player loses a piece
+			pp--;
+			if(fr_c > to_c){
+				b[fr_r+1][fr_c-1] = EMPTY_PIECE;
+			} else {
+				b[fr_r+1][fr_c+1] = EMPTY_PIECE;
+			}
+
+		} else {
+			// Computer loses a piece
+			cp--;
+			if(fr_c > to_c){
+				b[fr_r-1][fr_c-1] = EMPTY_PIECE;
+			} else {
+				b[fr_r-1][fr_c+1] = EMPTY_PIECE;
+			}
+		}
+
+	}
 }
 
 
@@ -349,31 +424,33 @@ int main(){
 
 			} else {
 				cout << "Computer moving..." << endl;
-				// get_computer_move(a,b,c,d,game_board);
-				if(count == 0){
-					a = 2;
-					b = 7;
-					c = 3;
-					d = 6;
-					count++;
+				count++;
+				get_computer_move(a,b,c,d,from_pairs,to_pairs,count-1);
 
-				} else if(count == 1){
-					a = 2;
-					b = 1;
-					c = 3;
-					d = 0;
-					count++;
-
-				} else if(count == 2){
-					a = 2;
-					b = 3;
-					c = 3;
-					d = 2;
-					count++;
-
-				} else {
-					return 0;
-				}
+//				if(count == 0){
+//					a = 2;
+//					b = 7;
+//					c = 3;
+//					d = 6;
+//					count++;
+//
+//				} else if(count == 1){
+//					a = 2;
+//					b = 1;
+//					c = 3;
+//					d = 0;
+//					count++;
+//
+//				} else if(count == 2){
+//					a = 2;
+//					b = 3;
+//					c = 3;
+//					d = 2;
+//					count++;
+//
+//				} else {
+//					return 0;
+//				}
 			}
 
 			// Check for valid move
@@ -398,7 +475,27 @@ int main(){
 
 				} else {
 					if(check_valid_jump(a,b,c,d,piece,game_board)){
+						// Player will jump a computer piece.
+						//  Update from_pairs for Computer.
+						if(current_turn == "Player"){
+							int x, y;
+							// Computer loses a piece
+							if(b > d){
+								x = a-1;
+								y = b-1;
+							} else {
+								x = a-1;
+								y = b+1;
+							}
+							for(int i = 0; i < from_pairs.size(); i++){
+								if(from_pairs.at(i).first == x && to_pairs.at(i).second == y)
+									from_pairs.erase(from_pairs.begin()+i);
+							}
+						}
+
+
 						valid_move = true;
+
 					} else {
 						throw invalid_jump_except;
 					}
@@ -456,8 +553,27 @@ int main(){
 		}
 
 
+		// When it is the Computer's turn and a valid move has been made,
+		//  Update the from_pair vector and the to_pair vector.
+		if(current_turn == "Computer"){
+
+			for(int i = 0; i < from_pairs.size();i++){
+				if(from_pairs.at(i).first == a && from_pairs.at(i).second == b)
+					from_pairs.erase(from_pairs.begin()+i);
+			}
+
+			from_pairs.push_back({c,d});
+
+			for(int i = 0; i < to_pairs.size();i++){
+				if(to_pairs.at(i).first == c && to_pairs.at(i).second == d)
+					to_pairs.erase(to_pairs.begin()+i);
+			}
+
+			cout << "Updating Computer vectors..." << endl;
+		}
+
 		// Play move on the board
-		play_move(a,b,c,d,piece,game_board);
+		play_move(a,b,c,d,piece,player_pieces,computer_pieces,game_board);
 
 
 		// Check for winner
