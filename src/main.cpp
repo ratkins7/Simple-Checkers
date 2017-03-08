@@ -169,25 +169,6 @@ bool check_diagonal(int fr_r, int fr_c, int to_r, int to_c){
 	}
 
 	return false;
-
-//	 Moreso check adjacent squares
-//	// right
-//	if(fr_r == to_r && fr_c + 1 == to_c)
-//		return false;
-//
-//	// left
-//	if(fr_r == to_r && fr_c - 1 == to_c)
-//		return false;
-//
-//	// up
-//	if(fr_r - 1 == to_r && fr_c == to_c)
-//		return false;
-//
-//	// down
-//	if(fr_r + 1 == to_r && fr_c == to_c)
-//		return false;
-//
-//	return true;
 }
 
 
@@ -362,6 +343,9 @@ int main(){
 	string current_turn = "Player";
 	string piece = PLAYER_PIECE;
 
+
+	int f = 0;
+
 	// Computer uses to see the board.
 	vector<pair<int,int> > from_pairs = {{0,1},{0,3},{0,5},{0,7},
 										 {1,0},{1,2},{1,4},{1,6},
@@ -423,34 +407,21 @@ int main(){
 				}
 
 			} else {
+				if(f>40){
+					return 0;
+				}
 				cout << "Computer moving..." << endl;
+				// Reset counter for selecting Computer move.
+				if(count >= from_pairs.size()){
+					count = 0;
+				}
 				count++;
 				get_computer_move(a,b,c,d,from_pairs,to_pairs,count-1);
 
-//				if(count == 0){
-//					a = 2;
-//					b = 7;
-//					c = 3;
-//					d = 6;
-//					count++;
-//
-//				} else if(count == 1){
-//					a = 2;
-//					b = 1;
-//					c = 3;
-//					d = 0;
-//					count++;
-//
-//				} else if(count == 2){
-//					a = 2;
-//					b = 3;
-//					c = 3;
-//					d = 2;
-//					count++;
-//
-//				} else {
-//					return 0;
-//				}
+				cout << "Computers move: From {" << a << "," << b
+					 << "}  To {" << c << "," << d << "}" << endl;
+
+				f++;
 			}
 
 			// Check for valid move
@@ -478,7 +449,7 @@ int main(){
 						// Player will jump a computer piece.
 						//  Update from_pairs for Computer.
 						if(current_turn == "Player"){
-							int x, y;
+							int x = 0, y = 0;
 							// Computer loses a piece
 							if(b > d){
 								x = a-1;
@@ -487,12 +458,14 @@ int main(){
 								x = a-1;
 								y = b+1;
 							}
+
 							for(int i = 0; i < from_pairs.size(); i++){
 								if(from_pairs.at(i).first == x && to_pairs.at(i).second == y)
 									from_pairs.erase(from_pairs.begin()+i);
 							}
-						}
 
+							cout << "Removed {" << x << "," << y << "} from 'from_pairs'" << endl;
+						}
 
 						valid_move = true;
 
@@ -505,50 +478,6 @@ int main(){
 			catch (exception& e){
 				cout << e.what() << '\n';
 			}
-
-//			// Check for valid move
-//			if(check_in_range(a,b,c,d)){
-//
-//				if(check_from_occupied(a,b,piece,game_board)){
-//
-//					if(check_to_occupied(c,d,game_board)){
-//
-//						if(check_diagonal(a,b,c,d)){
-//
-//							if(check_forward(a,b,c,d,piece)){
-//
-//								if(!check_jump(a,b,c,d,piece)){
-//									valid_move = true;
-//
-//								} else {
-//									if(check_valid_jump(a,b,c,d,piece,game_board)){
-//										valid_move = true;
-//									} else {
-//										cout << "Error -> Not a valid jump" << endl;
-//									}
-//								}
-//
-//								// valid_move = true;
-//
-//							} else {
-//								cout << "Error -> Moving backwards is not allowed" << endl;
-//							}
-//
-//						} else {
-//							cout << "Error -> Move must be a diagonal one" << endl;
-//						}
-//
-//					} else {
-//						cout << "Error -> TO space cannot be occupied" << endl;
-//					}
-//
-//				} else {
-//					cout << "Error -> FROM space not occupied by your piece" << endl;
-//				}
-//
-//			} else {
-//				cout << "Error -> Moves not on the board" << endl;
-//			}
 
 		}
 
