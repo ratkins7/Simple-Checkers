@@ -92,20 +92,21 @@ bool validate_within_limits(int a,int b){
 }
 
 
-void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, vector<pair<int,int>> &from_p, vector<pair<int,int>> &to_p, int c){
+void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, 
+					   vector<pair<int,int>> &from_p, vector<pair<int,int>> &to_p, int to_begin, int from_end){
 
-	// Plan would be for computer to pick randomly from spaces on the board where
+	// Computer to pick randomly from spaces on the board where
 	//  it has a piece and look through the list of spaces possible to move to from the
-	//  array of 'to_pair' until it found a valid move.
-	// Did not have enough time to keep track of where the computer currently has pieces
-	//  after the initial board setup in order to run the game for awhile.
-	// Currently, computer will just make two valid moves.
+	//  array of 'to_pair' until it finds a valid move.
 
-	fr_r = from_p.back().first;
-	fr_c = from_p.back().second;
+	cout << from_end << endl;
 
-	to_r = to_p.at(c).first;
-	to_c = to_p.at(c).second;
+
+	fr_r = from_p.at(from_end).first;
+	fr_c = from_p.at(from_end).second;
+
+	to_r = to_p.at(to_begin).first;
+	to_c = to_p.at(to_begin).second;
 
 }
 
@@ -303,38 +304,38 @@ bool check_winner(int &pp, int &cp, bool &c){
 }
 
 
-class range_exception{
+class range_exception:public exception{
 public:
-	virtual string what(){return "Error -> Move is not on the board";}
+	virtual const char* what() const throw(){return "Error -> Move is not on the board";}
 } range_except;
 
 
-class from_exception{
+class from_exception:public exception{
 public:
-	virtual string what(){return "Error -> FROM space not occupied by your piece";}
+	virtual const char* what() const throw(){return "Error -> FROM space not occupied by your piece";}
 } from_except;
 
 
-class to_exception{
+class to_exception:public exception{
 public:
-	virtual string what(){return "Error -> TO space cannot be occupied";}
+	virtual const char* what() const throw(){return "Error -> TO space cannot be occupied";}
 } to_except;
 
 
-class diagonal_exception{
+class diagonal_exception:public exception{
 public:
-	virtual string what(){return "Error -> Move must be a diagonal one";}
+	virtual const char* what() const throw(){return "Error -> Move must be a diagonal one";}
 } diagonal_except;
 
 
-class backwards_exception{
+class backwards_exception:public exception{
 public:
-  virtual string what(){return "Error -> Moving backwards is not allowed";}
+  virtual const char* what() const throw(){return "Error -> Moving backwards is not allowed";}
 } backwards_except;
 
 
-class invalid_jump_exception{
-  virtual string what(){return "Error -> Not a valid jump";}
+class invalid_jump_exception:public exception{
+  virtual const char* what() const throw(){return "Error -> Not a valid jump";}
 } invalid_jump_except;
 
 
@@ -347,53 +348,67 @@ int main(){
 	bool champion 		= false;	// True when Player defeats the Computer
 	string current_turn = "Player";
 	string piece 		= PLAYER_PIECE;
+	
 
-
-	int f = 0;
-
-	// Computer uses to see the board.
+	// Computer structures to see the board.
+	// from_pairs : locations of all computer occupied spaces
+	// to_pairs   : locations of all possible moves for computer
 	vector<pair<int,int> > from_pairs = {{0,1},{0,3},{0,5},{0,7},
 										 {1,0},{1,2},{1,4},{1,6},
 										 {2,1},{2,3},{2,5},{2,7}  };
 
-	vector<pair<int,int> > to_pairs = {{3,0},{3,2},{3,4},{3,6},
+	vector<pair<int,int> > to_pairs = {{1,0},{1,2},{1,4},{1,6},
+									   {2,1},{2,3},{2,5},{2,7},
+									   {3,0},{3,2},{3,4},{3,6},
 									   {4,1},{4,3},{4,5},{4,7},
 									   {5,0},{5,2},{5,4},{5,6},
 									   {6,1},{6,3},{6,5},{6,7},
 									   {7,0},{7,2},{7,4},{7,6}  };
 
-	// Dummy variable since computer logic not fully implemented.
-	int count = 0;
+
+	// Dummy variables since computer logic not fully implemented.
+	int count_begin = 0;
+	int count_end = from_pairs.size() - 1;
+	int f = 0;
+
 
 	cout << "Welcome to Simple Checkers" << endl;
 	cout << "Game board is "<< ROWS << " x " << COLS << endl;
 	cout << "Player, you control pieces -> 0" << endl << "Computer controls pieces   -> X" << endl;
+
 
 	// Setup the game board and display empty board.
 	string game_board[ROWS][COLS];
 
 	initialize_board(game_board);
 
-	// Primary game loop, while there is no winner, run the game.
-	// When either the Player or Computer wins, close the game and display the winner.
 
+	// Primary game loop: 
+	// While there is no winner, run the game.
+	// When either the Player or Computer wins, close the game and display the winner.
 	while(!winner){
-		// Display current board
+		
+		// Display current board with Game information
 		print_board(game_board);
 		cout << "Turn: " << current_turn << endl;
 		cout << "Player Pieces: " << player_pieces << "  Computer Pieces: " << computer_pieces << endl;
 
-		// Get move from player whose turn it is
+
+		// Request a move from the player whose turn it is
 		int a = 10, b = 10, c = 10, d = 10;
 		bool valid_move = false;
 
+
+		// While the input for a move is not Valid, continue to ask for valid numbers for a move. 
 		while(!valid_move){
 			if(current_turn == "Player"){
 
+				// Track user input for 'FROM' location and 'TO' location
 				bool input_error1 = true;
 				bool input_error2 = true;
 
-
+				// If there is an error in either the FROM location or TO location,
+				// Ask for correct input. 
 				while(input_error1 | input_error2){
 					cout << "FROM [row _space_ col]: " << flush;
 					cin >> a >> b;
@@ -412,22 +427,33 @@ int main(){
 					}
 				}
 
+				// Account for zero-based indexing for the user input.
+				a--;
+				b--;
+				c--;
+				d--;
+
 			} else {
-				if(f>40){
-					return 0;
-				}
 				// cout << "Computer moving..." << endl;
+
+				// Temporary check until Computer AI implemented fully
+				// if(f>40){
+				// 	return 0;
+				// }
+				
 				// Reset counter for selecting Computer move.
-				if(count >= from_pairs.size()){
-					count = 0;
+				if(count_begin >= to_pairs.size()){
+					count_begin = 0;
+					count_end--;
 				}
-				count++;
-				get_computer_move(a,b,c,d,from_pairs,to_pairs,count-1);
+				
+				get_computer_move(a,b,c,d,from_pairs,to_pairs,count_begin,count_end);
+				count_begin++;
 
-				// cout << "Computers move: From {" << a << "," << b
-				// 	 << "}  To {" << c << "," << d << "}" << endl;
+				// cout << "Computers move: From {" << a+1 << "," << b+1
+				// 	 << "}  To {" << c+1 << "," << d+1 << "}" << endl;
 
-				f++;
+				// f++;
 			}
 
 			// Check for valid move
@@ -470,6 +496,8 @@ int main(){
 									from_pairs.erase(from_pairs.begin()+i);
 							}
 
+							count_end = from_pairs.size() - 1;
+
 							cout << "Removed {" << x << "," << y << "} from 'from_pairs'" << endl;
 						}
 
@@ -497,14 +525,22 @@ int main(){
 					from_pairs.erase(from_pairs.begin()+i);
 			}
 
+			// cout << from_pairs.back().first << ":" << from_pairs.back().second;
 			from_pairs.push_back({c,d});
+			// cout << from_pairs.back().first << ":" << from_pairs.back().second;
 
-			for(int i = 0; i < to_pairs.size();i++){
-				if(to_pairs.at(i).first == c && to_pairs.at(i).second == d)
-					to_pairs.erase(to_pairs.begin()+i);
-			}
+			count_begin = 0;
+			count_end   = from_pairs.size() - 1;
 
-			// cout << "Updating Computer vectors..." << endl;
+			cout << from_pairs.at(count_end).first << ":" << from_pairs.at(count_end).second;
+
+			// for(int i = 0; i < to_pairs.size();i++){
+			// 	if(to_pairs.at(i).first == c && to_pairs.at(i).second == d)
+			// 		to_pairs.erase(to_pairs.begin()+i);
+			// }
+
+			cout << "Updating Computer vectors..." << endl;
+			// cout << from_pairs.back().first << ":" << from_pairs.back().second;
 		}
 
 		// Play move on the board
