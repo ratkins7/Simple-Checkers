@@ -75,7 +75,7 @@ void print_board(string (&b)[ROWS][COLS]){
 }
 
 
-void print_error(){
+void print_input_error(){
 	cout << flush << endl;
 	cin.clear();
 	cin.ignore(INT_MAX,'\n');
@@ -303,51 +303,38 @@ bool check_winner(int &pp, int &cp, bool &c){
 }
 
 
-class range_exception: public exception{
-  virtual const char* what() const throw(){
-    return "Error -> Move is not on the board";
-  }
-
+class range_exception{
+public:
+	virtual string what(){return "Error -> Move is not on the board";}
 } range_except;
 
 
-class from_exception: public exception{
-  virtual const char* what() const throw(){
-    return "Error -> FROM space not occupied by your piece";
-  }
-
+class from_exception{
+public:
+	virtual string what(){return "Error -> FROM space not occupied by your piece";}
 } from_except;
 
 
-class to_exception: public exception{
-  virtual const char* what() const throw(){
-    return "Error -> TO space cannot be occupied";
-  }
-
+class to_exception{
+public:
+	virtual string what(){return "Error -> TO space cannot be occupied";}
 } to_except;
 
 
-class diagonal_exception: public exception{
-  virtual const char* what() const throw(){
-    return "Error -> Move must be a diagonal one";
-  }
-
+class diagonal_exception{
+public:
+	virtual string what(){return "Error -> Move must be a diagonal one";}
 } diagonal_except;
 
 
-class backwards_exception: public exception{
-  virtual const char* what() const throw(){
-    return "Error -> Moving backwards is not allowed";
-  }
-
+class backwards_exception{
+public:
+  virtual string what(){return "Error -> Moving backwards is not allowed";}
 } backwards_except;
 
 
-class invalid_jump_exception: public exception{
-  virtual const char* what() const throw(){
-    return "Error -> Not a valid jump";
-  }
-
+class invalid_jump_exception{
+  virtual string what(){return "Error -> Not a valid jump";}
 } invalid_jump_except;
 
 
@@ -418,10 +405,10 @@ int main(){
 						if(cin.good()){
 							input_error2 = false;
 						} else{
-							print_error();
+							print_input_error();
 						}
 					} else {
-						print_error();
+						print_input_error();
 					}
 				}
 
