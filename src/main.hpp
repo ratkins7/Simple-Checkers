@@ -24,7 +24,8 @@ void print_input_error();
 
 
 // Gameplay Functions
-void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, std::vector<std::pair<int,int>> &from_p, std::vector<std::pair<int,int>> &to_p, int c);
+void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, 
+					   std::vector<std::pair<int,int>> &from_p, std::vector<std::pair<int,int>> &to_p, int to_begin, int from_end);
 void play_move(int fr_r, int fr_c, int to_r, int to_c, std::string (&p), int &pp, int &cp, std::string (&b)[ROWS][COLS]);
 void change_player(std::string (&p), std::string (&current_turn));
 bool check_winner(int &pp, int &cp, bool &c);
