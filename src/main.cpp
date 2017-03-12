@@ -71,6 +71,7 @@ void print_board(string (&b)[ROWS][COLS]){
 	}
 
 	cout << endl;
+
 }
 
 
@@ -81,11 +82,13 @@ void print_error(){
 	cout << "Oops, you entered an invalid move!\n"
 			"Please enter an int (the row) followed by\n"
 			"pressing space bar followed by an int (the column)" << endl;
+
 }
 
 
 bool validate_within_limits(int a,int b){
 	return a >= 0 && a < ROWS && b >=0 && b <= COLS;
+
 }
 
 
@@ -104,7 +107,6 @@ void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c, vector<pair<i
 	to_r = to_p.at(c).first;
 	to_c = to_p.at(c).second;
 
-
 }
 
 
@@ -113,16 +115,19 @@ bool check_in_range(int fr_r, int fr_c, int to_r, int to_c){
 		&& fr_c >= 0 && fr_c < COLS
 		&& to_r >= 0 && to_r < ROWS
 		&& to_c >= 0 && to_c < COLS;
+
 }
 
 
 bool check_from_occupied(int fr_r, int fr_c, string p, string (&b)[ROWS][COLS]){
 	return b[fr_r][fr_c] == p;
+
 }
 
 
 bool check_to_occupied(int to_r, int to_c, string (&b)[ROWS][COLS]){
 	return b[to_r][to_c] == "-.-";
+
 }
 
 
@@ -171,6 +176,7 @@ bool check_diagonal(int fr_r, int fr_c, int to_r, int to_c){
 	}
 
 	return false;
+
 }
 
 
@@ -187,6 +193,7 @@ bool check_forward(int fr_r, int fr_c, int to_r, int to_c, string p){
 	}
 
 	return true;
+
 }
 
 
@@ -205,6 +212,7 @@ bool check_jump(int fr_r, int fr_c, int to_r, int to_c, string &p){
 	}
 
 	return false;
+
 }
 
 
@@ -278,6 +286,7 @@ void change_player(string &p, string &current_turn){
 		current_turn = "Player";
 		p = PLAYER_PIECE;
 	}
+
 }
 
 
@@ -290,6 +299,7 @@ bool check_winner(int &pp, int &cp, bool &c){
 	}
 
 	return false;
+
 }
 
 
@@ -297,6 +307,7 @@ class range_exception: public exception{
   virtual const char* what() const throw(){
     return "Error -> Move is not on the board";
   }
+
 } range_except;
 
 
@@ -304,6 +315,7 @@ class from_exception: public exception{
   virtual const char* what() const throw(){
     return "Error -> FROM space not occupied by your piece";
   }
+
 } from_except;
 
 
@@ -311,6 +323,7 @@ class to_exception: public exception{
   virtual const char* what() const throw(){
     return "Error -> TO space cannot be occupied";
   }
+
 } to_except;
 
 
@@ -318,6 +331,7 @@ class diagonal_exception: public exception{
   virtual const char* what() const throw(){
     return "Error -> Move must be a diagonal one";
   }
+
 } diagonal_except;
 
 
@@ -325,6 +339,7 @@ class backwards_exception: public exception{
   virtual const char* what() const throw(){
     return "Error -> Moving backwards is not allowed";
   }
+
 } backwards_except;
 
 
@@ -332,18 +347,19 @@ class invalid_jump_exception: public exception{
   virtual const char* what() const throw(){
     return "Error -> Not a valid jump";
   }
+
 } invalid_jump_except;
 
 
 
 int main(){
 
-	int player_pieces = 12;
+	int player_pieces 	= 12;
 	int computer_pieces = 12;
-	bool winner   = false; 		// True when either the Player or Computer has won the game
-	bool champion = false; 		// True when Player defeats the Computer
+	bool winner   		= false;	// True when either the Player or Computer has won the game
+	bool champion 		= false;	// True when Player defeats the Computer
 	string current_turn = "Player";
-	string piece = PLAYER_PIECE;
+	string piece 		= PLAYER_PIECE;
 
 
 	int f = 0;
@@ -378,6 +394,7 @@ int main(){
 		// Display current board
 		print_board(game_board);
 		cout << "Turn: " << current_turn << endl;
+		cout << "Player Pieces: " << player_pieces << "  Computer Pieces: " << computer_pieces << endl;
 
 		// Get move from player whose turn it is
 		int a = 10, b = 10, c = 10, d = 10;
@@ -412,7 +429,7 @@ int main(){
 				if(f>40){
 					return 0;
 				}
-				cout << "Computer moving..." << endl;
+				// cout << "Computer moving..." << endl;
 				// Reset counter for selecting Computer move.
 				if(count >= from_pairs.size()){
 					count = 0;
@@ -420,8 +437,8 @@ int main(){
 				count++;
 				get_computer_move(a,b,c,d,from_pairs,to_pairs,count-1);
 
-				cout << "Computers move: From {" << a << "," << b
-					 << "}  To {" << c << "," << d << "}" << endl;
+				// cout << "Computers move: From {" << a << "," << b
+				// 	 << "}  To {" << c << "," << d << "}" << endl;
 
 				f++;
 			}
@@ -462,7 +479,7 @@ int main(){
 							}
 
 							for(int i = 0; i < from_pairs.size(); i++){
-								if(from_pairs.at(i).first == x && to_pairs.at(i).second == y)
+								if(from_pairs.at(i).first == x && from_pairs.at(i).second == y)
 									from_pairs.erase(from_pairs.begin()+i);
 							}
 
@@ -500,7 +517,7 @@ int main(){
 					to_pairs.erase(to_pairs.begin()+i);
 			}
 
-			cout << "Updating Computer vectors..." << endl;
+			// cout << "Updating Computer vectors..." << endl;
 		}
 
 		// Play move on the board
