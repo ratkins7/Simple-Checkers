@@ -99,9 +99,6 @@ void get_computer_move(int &fr_r, int &fr_c, int &to_r, int &to_c,
 	//  it has a piece and look through the list of spaces possible to move to from the
 	//  array of 'to_pair' until it finds a valid move.
 
-	cout << from_end << endl;
-
-
 	fr_r = from_p.at(from_end).first;
 	fr_c = from_p.at(from_end).second;
 
@@ -366,10 +363,9 @@ int main(){
 									   {7,0},{7,2},{7,4},{7,6}  };
 
 
-	// Dummy variables since computer logic not fully implemented.
+	// Vector counters for Computer AI.
 	int count_begin = 0;
 	int count_end = from_pairs.size() - 1;
-	int f = 0;
 
 
 	cout << "Welcome to Simple Checkers" << endl;
@@ -434,12 +430,6 @@ int main(){
 				d--;
 
 			} else {
-				// cout << "Computer moving..." << endl;
-
-				// Temporary check until Computer AI implemented fully
-				// if(f>40){
-				// 	return 0;
-				// }
 				
 				// Reset counter for selecting Computer move.
 				if(count_begin >= to_pairs.size()){
@@ -450,10 +440,6 @@ int main(){
 				get_computer_move(a,b,c,d,from_pairs,to_pairs,count_begin,count_end);
 				count_begin++;
 
-				// cout << "Computers move: From {" << a+1 << "," << b+1
-				// 	 << "}  To {" << c+1 << "," << d+1 << "}" << endl;
-
-				// f++;
 			}
 
 			// Check for valid move
@@ -497,8 +483,6 @@ int main(){
 							}
 
 							count_end = from_pairs.size() - 1;
-
-							cout << "Removed {" << x << "," << y << "} from 'from_pairs'" << endl;
 						}
 
 						valid_move = true;
@@ -510,7 +494,11 @@ int main(){
 			}
 
 			catch (exception& e){
-				cout << e.what() << '\n';
+				// Only Print Error message for Player moves. 
+				if(current_turn=="Player"){
+					cout << e.what() << '\n';
+				}
+				
 			}
 
 		}
@@ -525,21 +513,12 @@ int main(){
 					from_pairs.erase(from_pairs.begin()+i);
 			}
 
-			// cout << from_pairs.back().first << ":" << from_pairs.back().second;
 			from_pairs.push_back({c,d});
-			// cout << from_pairs.back().first << ":" << from_pairs.back().second;
 
 			count_begin = 0;
 			count_end   = from_pairs.size() - 1;
 
-			cout << from_pairs.at(count_end).first << ":" << from_pairs.at(count_end).second;
-
-			// for(int i = 0; i < to_pairs.size();i++){
-			// 	if(to_pairs.at(i).first == c && to_pairs.at(i).second == d)
-			// 		to_pairs.erase(to_pairs.begin()+i);
-			// }
-
-			cout << "Updating Computer vectors..." << endl;
+			// cout << "Updating Computer vectors..." << endl;
 			// cout << from_pairs.back().first << ":" << from_pairs.back().second;
 		}
 
