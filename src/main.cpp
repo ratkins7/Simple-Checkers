@@ -21,6 +21,20 @@ void initialize_board(string (&b)[ROWS][COLS]){
 		}
 	}
 
+	// Setup OFF_PIECES; Locations that will not be apart of the game.
+	for(int i = 0; i < 7; i += 2){
+		for(int j = 0; j < 7; j += 2){
+			b[i][j] = OFF_PIECE;
+		}
+	}
+
+	for(int i = 1; i < 8; i += 2){
+		for(int j = 1; j < 8; j += 2){
+			b[i][j] = OFF_PIECE;
+		}
+	}
+
+
 	// Setup COMPUTER_PIECE 	-> -X-
 	b[0][1] = COMPUTER_PIECE;
 	b[0][3] = COMPUTER_PIECE;
@@ -124,7 +138,7 @@ bool check_from_occupied(int fr_r, int fr_c, string p, string (&b)[ROWS][COLS]){
 
 
 bool check_to_occupied(int to_r, int to_c, string (&b)[ROWS][COLS]){
-	return b[to_r][to_c] == "-.-";
+	return b[to_r][to_c] == EMPTY_PIECE;
 
 }
 

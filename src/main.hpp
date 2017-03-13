@@ -12,7 +12,8 @@
 # define ROWS 8
 # define COLS 8
 
-# define EMPTY_PIECE "-.-"
+# define EMPTY_PIECE "   "
+# define OFF_PIECE " - "
 # define PLAYER_PIECE "-0-"
 # define COMPUTER_PIECE "-X-"
 
